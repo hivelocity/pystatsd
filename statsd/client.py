@@ -67,20 +67,15 @@ class StatsClient(object):
     """A client for statsd."""
 
     def __init__(self, host='localhost', port=8125, prefix=None,
-                 maxudpsize=512):
+                 maxudpsize=512, request=None):
         """Create a new client."""
         self._addr = (socket.gethostbyname(host), port)
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._maxudpsize = maxudpsize
-
-        # if prefix is request make the prefix the hostname
-        if prefix.__class__.__name__ == "WSGIRequest":
-            self._prefix = prefix.get_host().replace('.', '-')
+        if request:
+            self._prefix = request.get_host().replace('.', '-')
         else:
             self._prefix = prefix
-
-
-
 
     def pipeline(self):
         return Pipeline(self)
